@@ -100,6 +100,20 @@ class loadQuestionView(TemplateView):
                 }
         return ctx
         
+class loadAllQuestionsView(TemplateView):
+    template_name = "jsonResponse.html"
+    
+    def get_context_data(self, **kwargs):
+        id = self.request.GET.get('question_id', 1)
+        jsonResponse = ""
+        qList = Questions.objects.values()
+        jsonResponse = [json.dumps(question) for question in qList]
+       
+        ctx = {
+                'jsonResponse' : jsonResponse,
+                }
+        return ctx
+        
 class saveQuestionView(TemplateView):
     template_name = "jsonResponse.html"
     

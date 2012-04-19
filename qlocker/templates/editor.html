@@ -61,6 +61,7 @@ function loadQuestion(id){
             $('#question_id').val(returnData['id']);
             $('#id_question').val(returnData['question']);
             $('#id_solution').val(returnData['solution']);
+            var_dict = {};
             $('#id_question').trigger('keyup');
             
             
@@ -126,8 +127,33 @@ $.ajax({
 
 }
 
+function HtmlEncode(s)
+{
+  var el = document.createElement("div");
+  el.innerText = el.textContent = s;
+  s = el.innerHTML;
+  return s;
+}
+
+function loadAllQuestions(){
+inputString = document.getElementById("id_solution").value;
+$.ajax({
+  url: "/qlocker/loadAllQuestions",
+  context: document.body,
+  success: function(data){
+    returnData = eval('(' + data + ')');
+    q_html = "";
+    for (i=0; i <  returnData.length; i++){
+        question = eval('(' + returnData[i] + ')');
+        q_html += "<li onclick='javascript:loadQuestion("+question['id']+");'>"+ HtmlEncode(question['question']) + "</li>";
+    }
+    
+   $('#questions_list').html(q_html);
+  }
+});
 
 
+}
 
 
 
@@ -148,9 +174,12 @@ Variables<br>
     </div>
 </div>
 <div style = "height:100%;float:left;width:30%">
+    Saved Questions
+    <ul id = 'questions_list'>
     {%for q in qList%}
-        <div onclick="javascript:loadQuestion({{q.id}});">{{q.question}}</div>
+        <li onclick="javascript:loadQuestion({{q.id}});">{{q.question}}</li>
     {% endfor %}
+    </ul>
 </div>
 <div style = 'float:left;'>
 <form>
@@ -191,6 +220,7 @@ $(function() {
             success: function(data){
                 returnData = eval('(' + data + ')');
                 $('#question_id').val(returnData['question_id']);
+                loadAllQuestions();
                     //Set id field
             }
         });
